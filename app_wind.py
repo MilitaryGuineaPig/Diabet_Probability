@@ -7,41 +7,49 @@ from sklearn.preprocessing import LabelEncoder
 
 
 def print_result(entries):
+    # Get user data from the entries
     user_data = get_user_data(entries)
+    # Create a dictionary with the user data and attribute names
     attributes = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level',
                   'blood_glucose_level']
     data_dict = dict(zip(attributes, user_data))
 
+    # Load label encoders for gender and smoking history
     label_encoder_gender = joblib.load('encoder_gen.joblib')
     label_encoder_smoking_history = joblib.load('encoder_smok.joblib')
+    # Transform gender and smoking history using the label encoders
     data_dict['gender'] = label_encoder_gender.transform([data_dict['gender']])
     data_dict['smoking_history'] = label_encoder_smoking_history.transform([data_dict['smoking_history']])
 
-    # convert
+    # Convert dictionary values to appropriate types
     for key, value in data_dict.items():
         if isinstance(value, np.ndarray) and value.size == 1:
             data_dict[key] = np.squeeze(value).item()
         else:
             data_dict[key] = value
+    # Convert dictionary to a 2D numpy array
     input_array = np.array(list(data_dict.values()))
     input_array = input_array.reshape(1, -1)
 
+    # Load the diabetes prediction model and predict the probability of diabetes
     diabetes_model = joblib.load('dia_pred_mod.pkl')
     result = diabetes_model.predict_proba(input_array)[0][1]
     formatted_result = "{:.6f}".format(result)
+    # Clear the result entry and insert the formatted result
     result_entry.delete(0, tk.END)
     result_entry.insert(0, formatted_result)
 
 
 def close_info_window(info_window):
+    # Destroy the information window
     info_window.destroy()
 
 
 def info_func():
-    # create a new window
+    # Create a new window for information
     info_window = tk.Toplevel(root)
     info_window.title("Info")
-    # add a label with some text to the new window
+    # Add a label with information text to the new window
     information = "Diabetes Prediction Program\n\n" \
                   "This program allows you to predict the probability of having diabetes based on some personal information. To use the program, please follow these steps:\n\n" \
                   "- Enter your personal information in the fields provided. The fields are as follows:\n" \
@@ -58,19 +66,21 @@ def info_func():
                   "The result will be displayed in the \"Result\" field, which shows the percentage of the diabetes probability.\n\n" \
                   "- Please note that the diabetes prediction is based on a statistical model and is not a substitute for medical advice. If you are concerned about your health, please consult a healthcare professional."
     tk.Label(info_window, text=information, justify='left', wraplength=400).pack(padx=10, pady=10)
-    # add a close button to the new window
+    # Add a close button to the new window
     close_button = tk.Button(info_window, text="Close", command=lambda: close_info_window(info_window))
     close_button.pack(padx=10, pady=10)
 
 
 def get_user_data(entries):
     user_data = []
+    # Get info from each line
     for entry in entries:
         value = entry.get()
         if value.isdigit():
             user_data.append(float(value))
         else:
             user_data.append(value)
+    # Return an array
     return user_data
 
 
@@ -119,11 +129,11 @@ result_entry = tk.Entry(root)
 result_entry.grid(row=8, column=1, padx=10, pady=10)
 
 
-# create a button to print the result
+# Create a button to print the result
 result_button = tk.Button(root, text="Print result", command=lambda: print_result(entries))
 result_button.grid(row=9, column=1, columnspan=1, padx=5, pady=5)
 
-# create a button to print the info
+# Create a button to print the info
 info_button = tk.Button(root, text="Info", command=info_func)
 info_button.grid(row=9, column=0, columnspan=1, padx=5, pady=5)
 

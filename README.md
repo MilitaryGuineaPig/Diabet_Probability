@@ -1,6 +1,6 @@
 # Diabet_Probability
 Hi there 👋 
-I made a Diabet probability app based on your blood test!
+I made a Diabet probability (Accuracy 96%) app based on your blood test!
 
 The Diabetes Prediction Program is an app designed to help individuals predict the probability of having diabetes based on their personal information. This app requires users to enter their gender, age, hypertension, heart disease, smoking history, BMI, HbA1c level, and current blood glucose level. Once all the required fields are filled, users can click on the "Result" button to get their diabetes probability percentage.
 
